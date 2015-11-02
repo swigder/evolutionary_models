@@ -1,12 +1,18 @@
 import string
 import random
+import argparse
 
 
 class Weasel:
-    chance_of_change = .05
-    change_target = True
-    children_per_generation = 100
-    target = 'METHINKS IT IS LIKE A WEASEL'
+    def __init__(self,
+                 target='METHINKS IT IS LIKE A WEASEL',
+                 mutation_rate=.05,
+                 fix_target=False,
+                 children_per_generation=100):
+        self.target = target
+        self.mutation_rate = mutation_rate
+        self.fix_target = fix_target,
+        self.children_per_generation = children_per_generation
 
     def generate_weasel(self):
         parent = ''.join(self.random_letter() for i in range(len(self.target)))
@@ -22,13 +28,13 @@ class Weasel:
         print('Evolution to target {} from random initial junk took {} generations with {} children generation and a '
               'mutation rate of {} per letter per generation'.format(self.target, generation,
                                                                      self.children_per_generation,
-                                                                     self.chance_of_change))
+                                                                     self.mutation_rate))
 
     def reproduce(self, parent):
         child = ''
         for i, letter in enumerate(parent):
-            child += letter if (not self.change_target and letter == self.target[i]) \
-                               or random.random() > self.chance_of_change else self.random_letter()
+            child += letter if self.fix_target and letter == self.target[i] \
+                               or random.random() > self.mutation_rate else self.random_letter()
         return child
 
     def evaluate_child(self, child):
@@ -50,4 +56,16 @@ class Weasel:
         print('{}: {} -- score {}'.format(generation, value, evaluation))
 
 if __name__ == '__main__':
-    Weasel().generate_weasel()
+    parser = argparse.ArgumentParser(description='Generate a phrase by mutation.')
+
+    parser.add_argument('target', type=str, help='phrase to generate', nargs='?',
+                        default='METHINKS IT IS LIKE A WEASEL')
+    parser.add_argument('-m', '--mutation_rate', type=float, help='chance of change per letter per generation',
+                        default=.05)
+    parser.add_argument('-f', '--fix_target', type=bool, help='prevent letter from changing once it matches the target',
+                        default=False)
+    parser.add_argument('-c', '--children', type=int, help='number of children per generation', default=100)
+
+    args = parser.parse_args()
+
+    Weasel(args.target.upper(), args.mutation_rate, args.fix_target, args.children).generate_weasel()
