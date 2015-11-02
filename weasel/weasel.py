@@ -4,6 +4,7 @@ import random
 
 class Weasel:
     chance_of_change = .05
+    change_target = True
     children_per_generation = 100
     target = 'METHINKS IT IS LIKE A WEASEL'
 
@@ -14,7 +15,7 @@ class Weasel:
         while evaluation != len(self.target):
             self.print_generation(generation, parent, evaluation)
             generation += 1
-            children = [self.reproduce(parent)] * self.children_per_generation
+            children = [self.reproduce(parent) for i in range(self.children_per_generation)]
             parent = self.best_child(children, parent)
             evaluation = self.evaluate_child(parent)
         self.print_generation(generation, parent, evaluation)
@@ -25,8 +26,9 @@ class Weasel:
 
     def reproduce(self, parent):
         child = ''
-        for letter in parent:
-            child += letter if random.random() > self.chance_of_change else self.random_letter()
+        for i, letter in enumerate(parent):
+            child += letter if (not self.change_target and letter == self.target[i]) \
+                               or random.random() > self.chance_of_change else self.random_letter()
         return child
 
     def evaluate_child(self, child):
