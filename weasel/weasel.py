@@ -18,23 +18,23 @@ class Weasel:
         parent = ''.join(self.random_letter() for i in range(len(self.target)))
         evaluation = self.evaluate_child(parent)
         generation = 0
-        generations = [(generation, parent, evaluation)]
+        generations = [{'generation': generation, 'value': parent, 'evaluation': evaluation}]
         while evaluation != len(self.target):
             generation += 1
             children = [self.reproduce(parent) for i in range(self.children_per_generation)]
             parent = self.best_child(children, parent)
             evaluation = self.evaluate_child(parent)
-            generations.append((generation, parent, evaluation))
+            generations.append({'generation': generation, 'value': parent, 'evaluation': evaluation})
         return generations
 
     def generate_weasel_with_output(self):
         generations = self.generate_weasel()
-        for generation, value, evaluation in generations:
-            self.print_generation(generation, value, evaluation)
+        for generation in generations:
+            self.print_generation(generation.generation, generation.value, generation.evaluation)
         print('Evolution to target {} from random initial junk took {} generations with {} children generation and a '
               'mutation rate of {} per letter per generation'.format(self.target, len(generations),
-                                                             self.children_per_generation,
-                                                             self.mutation_rate))
+                                                                     self.children_per_generation,
+                                                                     self.mutation_rate))
 
     def reproduce(self, parent):
         child = ''
@@ -60,6 +60,7 @@ class Weasel:
     @staticmethod
     def print_generation(generation, value, evaluation):
         print('{}: {} -- score {}'.format(generation, value, evaluation))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate a phrase by mutation.')
