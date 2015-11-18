@@ -18,17 +18,23 @@ class Weasel:
         parent = ''.join(self.random_letter() for i in range(len(self.target)))
         evaluation = self.evaluate_child(parent)
         generation = 0
+        generations = [(generation, parent, evaluation)]
         while evaluation != len(self.target):
-            self.print_generation(generation, parent, evaluation)
             generation += 1
             children = [self.reproduce(parent) for i in range(self.children_per_generation)]
             parent = self.best_child(children, parent)
             evaluation = self.evaluate_child(parent)
-        self.print_generation(generation, parent, evaluation)
+            generations.append((generation, parent, evaluation))
+        return generations
+
+    def generate_weasel_with_output(self):
+        generations = self.generate_weasel()
+        for generation, value, evaluation in generations:
+            self.print_generation(generation, value, evaluation)
         print('Evolution to target {} from random initial junk took {} generations with {} children generation and a '
-              'mutation rate of {} per letter per generation'.format(self.target, generation,
-                                                                     self.children_per_generation,
-                                                                     self.mutation_rate))
+              'mutation rate of {} per letter per generation'.format(self.target, len(generations),
+                                                             self.children_per_generation,
+                                                             self.mutation_rate))
 
     def reproduce(self, parent):
         child = ''
