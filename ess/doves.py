@@ -63,6 +63,7 @@ class Experiment:
             entity1.fight(entity2)
 
     def update(self):
+        # todo the exact update strategy is yet to be defined
         min_score = min(entity.score for entity in self.entities)
         epsilon = 0 if min_score > 0 else -min_score + 1
         dove_score = sum(entity.score + epsilon for entity in self.entities if type(entity) is Dove)
@@ -81,5 +82,5 @@ if __name__ == "__main__":
     experiment = Experiment(TOTAL, Dove)
     experiment.round()
     experiment.invade(Hawk)
-    for _ in range(1000):
+    for _ in range(1000):  # todo should repeat until an ESS is found
         experiment.round()
